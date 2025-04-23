@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IS 201 Wordle</title>
+  <title>Mini Wordle</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -86,7 +86,7 @@
     button {
       padding: 10px 20px;
       font-size: 16px;
-      margin-left: 10px;
+      margin: 10px 5px;
       cursor: pointer;
     }
   </style>
@@ -96,34 +96,38 @@
     <a href="index.html">Resume Page</a>
     <a href="scratch.html">Projects</a>
   </nav>
-  <h1>IS 201 Wordle</h1>
+  <h1>Mini Wordle</h1>
   <div class="board" id="board"></div>
   <div>
     <input type="text" id="guessInput" maxlength="5" />
     <button onclick="submitGuess()">Guess</button>
+    <button onclick="resetGame()">Reset</button>
   </div>
   <div id="message"></div>
 
   <script>
-    const words = ["reese", "query", "table", "excel", "cache", "bytes"];
-    const solution = words[Math.floor(Math.random() * words.length)];
+    const words = ["apple", "grape", "brave", "flame", "crisp", "stone", "shiny", "track", "plant", "quiet"];
+    let solution = words[Math.floor(Math.random() * words.length)];
     const board = document.getElementById("board");
     const message = document.getElementById("message");
+    const input = document.getElementById("guessInput");
     let currentRow = 0;
 
-    for (let i = 0; i < 6; i++) {
-      const row = document.createElement("div");
-      row.className = "row";
-      for (let j = 0; j < 5; j++) {
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        row.appendChild(tile);
+    function createBoard() {
+      board.innerHTML = "";
+      for (let i = 0; i < 6; i++) {
+        const row = document.createElement("div");
+        row.className = "row";
+        for (let j = 0; j < 5; j++) {
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          row.appendChild(tile);
+        }
+        board.appendChild(row);
       }
-      board.appendChild(row);
     }
 
     function submitGuess() {
-      const input = document.getElementById("guessInput");
       const guess = input.value.toLowerCase();
       if (guess.length !== 5) {
         message.textContent = "Enter a 5-letter word.";
@@ -173,6 +177,18 @@
       input.value = "";
       input.focus();
     }
+
+    function resetGame() {
+      solution = words[Math.floor(Math.random() * words.length)];
+      currentRow = 0;
+      message.textContent = "";
+      input.disabled = false;
+      input.value = "";
+      input.focus();
+      createBoard();
+    }
+
+    createBoard();
   </script>
 </body>
 </html>
