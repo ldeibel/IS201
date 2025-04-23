@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IS 201 Wordle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121213;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding-top: 30px;
+    }
+    nav {
+      width: 100%;
+      background-color: #1a1a1c;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      margin-top: 60px;
+      margin-bottom: 20px;
+    }
+    .board {
+      display: grid;
+      grid-template-rows: repeat(6, 1fr);
+      gap: 5px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+    }
+    .tile {
+      width: 50px;
+      height: 50px;
+      background-color: #3a3a3c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .correct {
+      background-color: #538d4e;
+    }
+    .present {
+      background-color: #b59f3b;
+    }
+    .absent {
+      background-color: #3a3a3c;
+      opacity: 0.6;
+    }
+    #message {
+      margin-top: 15px;
+      font-size: 18px;
+      color: #ffcc00;
+    }
+    input[type="text"] {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 18px;
+      width: 160px;
+      text-align: center;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Resume Page</a>
+    <a href="scratch.html">Projects</a>
+  </nav>
+  <h1>IS 201 Wordle</h1>
+  <div class="board" id="board"></div>
+  <div>
+    <input type="text" id="guessInput" maxlength="5" />
+    <button onclick="submitGuess()">Guess</button>
+  </div>
+  <div id="message"></div>
+
+  <script>
+    const words = ["reese", "query", "table", "excel", "cache", "bytes"];
+    const solution = words[Math.floor(Math.random() * words.length)];
+    const board = document.getElementById("board");
+    const message = document.getElementById("message");
+    let currentRow = 0;
+
+    for (let i = 0; i < 6; i++) {
+      const row = document.createElement("div");
+      row.className = "row";
+      for (let j = 0; j < 5; j++) {
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        row.appendChild(tile);
+      }
+      board.appendChild(row);
+    }
+
+    function submitGuess() {
+      const input = document.getElementById("guessInput");
+      const guess = input.value.toLowerCase();
+      if (guess.length !== 5) {
+        message.textContent = "Enter a 5-letter word.";
+        return;
+      }
+      if (currentRow >= 6) return;
+
+      const row = board.children[currentRow];
+      const letterCount = {};
+
+      for (let letter of solution) {
+        letterCount[letter] = (letterCount[letter] || 0) + 1;
+      }
+
+      // First pass: correct positions
+      for (let i = 0; i < 5; i++) {
+        const tile = row.children[i];
+        tile.textContent = guess[i];
+        if (guess[i] === solution[i]) {
+          tile.classList.add("correct");
+          letterCount[guess[i]]--;
+        }
+      }
+
+      // Second pass: present but wrong position
+      for (let i = 0; i < 5; i++) {
+        const tile = row.children[i];
+        if (!tile.classList.contains("correct")) {
+          if (solution.includes(guess[i]) && letterCount[guess[i]] > 0) {
+            tile.classList.add("present");
+            letterCount[guess[i]]--;
+          } else {
+            tile.classList.add("absent");
+          }
+        }
+      }
+
+      if (guess === solution) {
+        message.textContent = "You got it! 🎉";
+        input.disabled = true;
+      } else if (currentRow === 5) {
+        message.textContent = `Out of guesses! The word was "${solution.toUpperCase()}".`;
+        input.disabled = true;
+      }
+
+      currentRow++;
+      input.value = "";
+      input.focus();
+    }
+  </script>
+</body>
+</html>
